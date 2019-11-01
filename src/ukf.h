@@ -117,8 +117,10 @@ class UKF {
   // Sigma point spreading parameter
   double lambda_;
 
-
+  // variable storing the NIS for the lidar ukf step
   double NIS_lidar_;
+
+  // variable storing the NIS for radar ukf step
   double NIS_radar_;
 };
 
