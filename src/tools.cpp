@@ -36,7 +36,7 @@ lmarker Tools::lidarSense(Car& car, pcl::visualization::PCLVisualizer::Ptr& view
 }
 
 // sense where a car is located using radar measurement
-rmarker Tools::radarSense(Car& car, Car ego, pcl::visualization::PCLVisualizer::Ptr& viewer, long long timestamp, bool visualize)
+rmarker Tools::radarSense(Car& car, const Car& ego, pcl::visualization::PCLVisualizer::Ptr& viewer, long long timestamp, bool visualize)
 {
 	double rho = sqrt((car.position.x-ego.position.x)*(car.position.x-ego.position.x)+(car.position.y-ego.position.y)*(car.position.y-ego.position.y));
 	double phi = atan2(car.position.y-ego.position.y,car.position.x-ego.position.x);
@@ -65,19 +65,26 @@ rmarker Tools::radarSense(Car& car, Car ego, pcl::visualization::PCLVisualizer::
 // int steps:: how many steps to show between present and time and future time
 void Tools::ukfResults(Car car, pcl::visualization::PCLVisualizer::Ptr& viewer, double time, int steps)
 {
-	UKF ukf = car.ukf; // TODO: CHANGE TO REFERENCE!!!
+	UKF& ukf = car.ukf; // make a reference here to access the original ukf
+
 	viewer->addSphere(pcl::PointXYZ(ukf.x_[0],ukf.x_[1],3.5), 0.5, 0, 1, 0,car.name+"_ukf");
 	viewer->addArrow(pcl::PointXYZ(ukf.x_[0], ukf.x_[1],3.5), pcl::PointXYZ(ukf.x_[0]+ukf.x_[2]*cos(ukf.x_[3]),ukf.x_[1]+ukf.x_[2]*sin(ukf.x_[3]),3.5), 0, 1, 0, car.name+"_ukf_vel");
-	if(time > 0)
+
+	UKF ukf_new = car.ukf; // make a deep copy here to not affect to original ukf for further steps
+
+	if(time > 0) 
 	{
 		double dt = time/steps;
 		double ct = dt;
 		while(ct <= time)
 		{
-			std::cout << "UKFResults" << std::endl;
-			ukf.Prediction(dt);
-			viewer->addSphere(pcl::PointXYZ(ukf.x_[0],ukf.x_[1],3.5), 0.5, 0, 1, 0,car.name+"_ukf"+std::to_string(ct));
+			std::cout << car.name << ": Do path prediction up to time: " << time << " current: " << ct << std::endl;
+
+			ukf_new.Prediction(dt);
+			viewer->addSphere(pcl::PointXYZ(ukf_new.x_[0],ukf_new.x_[1],3.5), 0.5, 0, 1, 0,car.name+"_ukf"+std::to_string(ct));
 			viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, 1.0-0.8*(ct/time), car.name+"_ukf"+std::to_string(ct));
+			
+			std::cout << car.name << ": predicted position ukf._x_\n" << ukf_new.x_ << std::endl;
 			//viewer->addArrow(pcl::PointXYZ(ukf.x_[0], ukf.x_[1],3.5), pcl::PointXYZ(ukf.x_[0]+ukf.x_[2]*cos(ukf.x_[3]),ukf.x_[1]+ukf.x_[2]*sin(ukf.x_[3]),3.5), 0, 1, 0, car.name+"_ukf_vel"+std::to_string(ct));
 			//viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, 1.0-0.8*(ct/time), car.name+"_ukf_vel"+std::to_string(ct));
 			ct += dt;

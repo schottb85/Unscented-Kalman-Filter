@@ -45,7 +45,7 @@ class Tools {
 	
 	double noise(double stddev, long long seedNum);
 	lmarker lidarSense(Car& car, pcl::visualization::PCLVisualizer::Ptr& viewer, long long timestamp, bool visualize);
-	rmarker radarSense(Car& car, Car ego, pcl::visualization::PCLVisualizer::Ptr& viewer, long long timestamp, bool visualize);
+	rmarker radarSense(Car& car, const Car& ego, pcl::visualization::PCLVisualizer::Ptr& viewer, long long timestamp, bool visualize);
 	void ukfResults(Car car, pcl::visualization::PCLVisualizer::Ptr& viewer, double time, int steps); /// \todo CHANGED TO REFERENCE
 	/**
 	* A helper method to calculate RMSE.

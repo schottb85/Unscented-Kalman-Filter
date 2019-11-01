@@ -23,7 +23,13 @@ class UKF {
   void ProcessLidarMeasurement(const MeasurementPackage& meas_package);
   void ProcessRadarMeasurement(const MeasurementPackage& meas_package);
 
-  void ProcessMeasurement(MeasurementPackage meas_package);
+  void ProcessMeasurement(const MeasurementPackage& meas_package);
+
+  void Initialize(const MeasurementPackage& meas_package);
+
+  void InitLidarMeasurement(const MeasurementPackage& meas_package);
+
+  void InitRadarMeasurement(const MeasurementPackage& meas_package);
 
   void GenerateAugmentedSigmaPoints(Eigen::MatrixXd* Xsig_out);
 
@@ -33,7 +39,9 @@ class UKF {
 
   void PredictRadarMeasurement(const Eigen::MatrixXd& Xsig_pred, Eigen::MatrixXd* Zsig_out, Eigen::VectorXd* z_out, Eigen::MatrixXd* S_out);
 
-  void UpdateState(Eigen::VectorXd* x_out, Eigen::MatrixXd* P_out, const Eigen::VectorXd& z);
+  void PredictMeasurement(int n_z, const Eigen::MatrixXd &Zsig, Eigen::VectorXd &z_pred, Eigen::MatrixXd &S, const Eigen::MatrixXd &R);
+
+  void UpdateState(const Eigen::VectorXd& z, const Eigen::VectorXd& z_pred, const Eigen::MatrixXd& S, const Eigen::MatrixXd& Zsig);
 
   /**
    * Prediction Predicts sigma points, the state, and the state covariance
@@ -56,8 +64,7 @@ class UKF {
 
 
   // initially set to false, set to true in first call of ProcessMeasurement
-  bool is_initialized_lidar_;
-  bool is_initialized_radar_;
+  bool is_initialized_;
 
   // if this is false, laser measurements will be ignored (except for init)
   bool use_laser_;
@@ -110,20 +117,9 @@ class UKF {
   // Sigma point spreading parameter
   double lambda_;
 
-  // set measurement dimension, radar can measure r, phi, and r_dot
-  int n_z_radar_;
 
-    // create matrix for sigma points in measurement space
-  Eigen::MatrixXd Zsig_;
-
-  // mean predicted measurement
-  Eigen::VectorXd z_pred_;
-  
-  // measurement covariance matrix S
-  Eigen::MatrixXd S_;
-
-  double previous_timestamp_radar_;
-  double previous_timestamp_lidar_;
+  double NIS_lidar_;
+  double NIS_radar_;
 };
 
 #endif  // UKF_H
