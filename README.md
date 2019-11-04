@@ -22,16 +22,16 @@ Kalman filter are used in this project to estimate **positioning** and **velocit
 `make`
 
 # Variants
-##Visualization options
+## Visualization options
 There are different flags to be selected for different visualization in highway.h
 -	`bool visualize_lidar = true;`
 -	`bool visualize_radar = true;`
 -	`bool visualize_pcd = false;`
 
-##Lidar and/or Radar UKF measurements
+## Lidar and/or Radar UKF measurements
 - in ukf.cpp two parameters `bool use_laser_` and `bool use_lidar_` can be used activate/deactivate the use of lidar and radar measurements, respectively
 
-##Prediction of path
+## Prediction of path
 the path prediction for the different cars can be configured using e.g.
 - `double projectedTime = 2;`
 - `int projectedSteps = 6;`
