@@ -7,6 +7,8 @@ Kalman filter are used in this project to estimate **positioning** and **velocit
 - tools.cpp/.h controls the ukf filter and its visualization
 - highway.cpp/.h define an example scenario for testing
 
+<img src="images/example_pic.png" width="779" height="414" />
+
 
 # Installation
 `git clone https://github.com/schottb85/kalman.git`
